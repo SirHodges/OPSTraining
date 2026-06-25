@@ -231,13 +231,99 @@
     </div>
   </section>
 
+  <!-- CAPACITY -->
+  <section class="panel">
+    <h3 class="panel-head">From paid hours to real capacity</h3>
+    <p class="lede" style="font-size:14.5px;margin-bottom:20px">A full-time municipal post is paid for ~2,080 hours, but almost no program runs on that figure. Subtract leave, the team's own training, and the share of the working day that goes to meetings, admin, and breaks, and you get the hours actually available for <i>this</i> program — the honest denominator for any staffing ask.</p>
+    <div class="controls">
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Paid hours / yr
+            <span class="info" tabindex="0" aria-label="about paid hours">i<span class="tip">Gross contracted hours for one full-time post. 2,080 = a 40-hour week; some municipal admin posts run a 35-hour week (~1,820). The starting point before any deductions.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_paid">2,080</span>
+        </div>
+        <input id="s_paid" type="range" min="1820" max="2080" step="20" value="2080">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Vacation (weeks)
+            <span class="info" tabindex="0" aria-label="about vacation">i<span class="tip">Unionized municipal entitlement scales with seniority — commonly 4 weeks mid-career, 5–6 for senior staff. Set this to the band your actual team sits in, not the minimum.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_vac">4</span>
+        </div>
+        <input id="s_vac" type="range" min="2" max="7" step="1" value="4">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Statutory holidays (days)
+            <span class="info" tabindex="0" aria-label="about holidays">i<span class="tip">Ontario's ESA sets 9 public holidays; municipalities commonly observe a few more (civic holiday, float days). Paid, but not available for program work.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_stat">11</span>
+        </div>
+        <input id="s_stat" type="range" min="9" max="14" step="1" value="11">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Sick / personal (days)
+            <span class="info" tabindex="0" aria-label="about sick">i<span class="tip">Budgeted average usage, not the entitlement cap. Public-sector averages often run higher than people expect — plan for what actually gets taken across the team.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_sick">6</span>
+        </div>
+        <input id="s_sick" type="range" min="0" max="15" step="1" value="6">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Own CE + mandatory training (hrs)
+            <span class="info" tabindex="0" aria-label="about own ce">i<span class="tip">Instructors maintaining their own credentials and recerts, plus corporate mandatory training (privacy, AODA, WHMIS). Your T&amp;D staff are also subject to this very 24-credit requirement — count it.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_ce">60</span>
+        </div>
+        <input id="s_ce" type="range" min="0" max="160" step="10" value="60">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">On-program utilization (%)
+            <span class="info" tabindex="0" aria-label="about utilization">i<span class="tip">Share of remaining working hours that lands on actual program work, after general meetings, email, corporate admin, paid breaks, supervisory duties, and context-switching. Knowledge work is roughly 70–80%; unionized public-sector planning leans to the lower end.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_util">78%</span>
+        </div>
+        <input id="s_util" type="range" min="50" max="95" step="1" value="78">
+      </div>
+
+    </div>
+
+    <div class="readouts" style="grid-template-columns:1fr 1fr 1fr;margin-top:22px">
+      <div class="readout">
+        <p class="k">Paid hours</p>
+        <div class="v" id="m_paid">2,080</div>
+      </div>
+      <div class="readout">
+        <p class="k">Hours actually at work</p>
+        <div class="v" id="m_atwork">1,724</div>
+      </div>
+      <div class="readout hero">
+        <p class="k">Effective hrs / FTE
+          <span class="info" tabindex="0" aria-label="about effective hours">i<span class="tip">What one full-time post truly delivers against this program after both haircuts. This — not 2,080, not a round 1,800 — is the denominator the estimate uses.</span></span>
+        </p>
+        <div class="v" id="m_eff">1,345</div>
+      </div>
+    </div>
+  </section>
+
   <!-- READOUTS -->
   <section class="panel">
     <h3 class="panel-head">The estimate</h3>
     <div class="readouts">
       <div class="readout hero">
         <p class="k">Steady-state staffing
-          <span class="info" tabindex="0" aria-label="about fte">i<span class="tip">Total T&amp;D workload divided by 1,800 productive hours per full-time staffer. This is recurring, ongoing effort — Year 1 runs higher (see note below).</span></span>
+          <span class="info" tabindex="0" aria-label="about fte">i<span class="tip">Total T&amp;D workload divided by the effective hours one FTE delivers (derived in the capacity panel above), not a round number. Recurring effort — Year 1 runs higher (see note below).</span></span>
         </p>
         <div class="v" id="m_fte">1.85<small>FTE</small></div>
       </div>
@@ -285,7 +371,7 @@
         <li>Delivery prep runs at 0.5× contact time (re-prep and setup for an already-built session, not first build).</li>
         <li>eLearning build ≈ 60 hours of work per finished hour; instructor-led materials ≈ 15 hours per finished hour.</li>
         <li>Half the content catalogue is refreshed or rebuilt each year; multiple paths multiply the distinct content.</li>
-        <li>Program governance is held flat at 300 hrs/yr; 1 FTE = 1,800 productive hours.</li>
+        <li>Program governance is held flat at 300 hrs/yr. One FTE's effective capacity is no longer a fixed number — it's built up in the capacity panel from leave, own training, and on-program utilization, so the staffing figure reflects a real municipal post rather than a paper 2,080 hours.</li>
         <li><b>Year 1 is not steady state.</b> Add the full initial catalogue build plus framework, policy, and LMS standup — budget meaningfully higher for the first year.</li>
       </ul>
     </div>
@@ -301,7 +387,7 @@
 (function(){
   var $=function(id){return document.getElementById(id);};
   var STAFF=800,CREDITS=24,SESSLEN=4,INSTR=2,CONFSIZE=50,
-      PREP=0.5,ELRATIO=60,ILTRATIO=15,REFRESH=0.5,GOV=300,FTEH=1800,EXTCOORD=4;
+      PREP=0.5,ELRATIO=60,ILTRATIO=15,REFRESH=0.5,GOV=300,EXTCOORD=4;
 
   var META=[
     {key:'del',name:'Internal delivery',color:'var(--c-deliver)',cls:'sc-head',scale:'Scales with staff',
@@ -344,6 +430,11 @@
     var pEl=100-pSmall-pConf;
     var size=+$('s_size').value, ext=+$('s_ext').value/100,
         paths=+$('s_paths').value, admin=+$('s_admin').value, sched=+$('s_sched').value;
+
+    var paid=+$('s_paid').value, vac=+$('s_vac').value, stat=+$('s_stat').value,
+        sick=+$('s_sick').value, ceHrs=+$('s_ce').value, util=+$('s_util').value/100;
+    var atWork=paid - vac*40 - stat*8 - sick*8 - ceHrs;
+    var effHrs=atWork*util;
     var pathMult=1+(paths-1)*0.35;
     var hS=CREDITS*pSmall/100, hC=CREDITS*pConf/100, hE=CREDITS*pEl/100;
     var sessS=(STAFF*hS)/(size*SESSLEN), sessC=(STAFF*hC)/(CONFSIZE*SESSLEN), sessTot=sessS+sessC;
@@ -360,8 +451,15 @@
     $('o_size').textContent=size; $('o_ext').textContent=Math.round(ext*100)+'%';
     $('o_paths').textContent=paths; $('o_admin').textContent=admin.toFixed(2);
     $('o_sched').textContent=sched;
+    $('o_paid').textContent=paid.toLocaleString(); $('o_vac').textContent=vac;
+    $('o_stat').textContent=stat; $('o_sick').textContent=sick;
+    $('o_ce').textContent=ceHrs; $('o_util').textContent=Math.round(util*100)+'%';
 
-    $('m_fte').innerHTML=(total/FTEH).toFixed(2)+'<small>FTE</small>';
+    $('m_paid').textContent=paid.toLocaleString();
+    $('m_atwork').textContent=Math.round(atWork).toLocaleString();
+    $('m_eff').textContent=Math.round(effHrs).toLocaleString();
+
+    $('m_fte').innerHTML=(total/effHrs).toFixed(2)+'<small>FTE</small>';
     $('m_total').textContent=Math.round(total).toLocaleString();
     $('m_sess').textContent=Math.round(sessTot).toLocaleString();
     $('m_learner').textContent=(STAFF*CREDITS).toLocaleString();
@@ -376,9 +474,11 @@
     $('bars').innerHTML=barHtml;
 
     var del2=Math.round(del+prep), ovh=Math.round(adminH+schedH);
+    var lostPct=Math.round((1-effHrs/paid)*100);
     $('hint').innerHTML='At these settings, <b>live delivery and prep ('+del2.toLocaleString()+' hrs)</b> and '+
-      '<b>headcount-driven overhead ('+ovh.toLocaleString()+' hrs)</b> together make up the bulk of the load — and all of it scales with your 800. '+
-      'Content creation is a smaller, one-builds-many slice. The fastest way to bend the curve is the <b>admin</b> slider: automate tracking and a quarter-FTE comes back every year.';
+      '<b>headcount-driven overhead ('+ovh.toLocaleString()+' hrs)</b> make up the bulk of the load — all of it scaling with your 800. '+
+      'And because a paid post yields only <b>'+Math.round(effHrs).toLocaleString()+' on-program hours ('+lostPct+'% lost</b> to leave, own training, and non-program duties), the headcount you must budget is well above a naive workload\u00F7full-time-hours figure. '+
+      'Two levers move it most: the <b>admin</b> slider (automation buys back ~a quarter-FTE) and <b>on-program utilization</b> (every realistic point you can defend changes the ask).';
   }
 
   $('cards').innerHTML=META.map(function(m){
@@ -388,7 +488,8 @@
       '<p class="drv"><b>What drives it:</b> '+m.drivers+'</p></div>';
   }).join('');
 
-  ['s_small','s_conf','s_size','s_ext','s_paths','s_admin','s_sched'].forEach(function(id){
+  ['s_small','s_conf','s_size','s_ext','s_paths','s_admin','s_sched',
+   's_paid','s_vac','s_stat','s_sick','s_ce','s_util'].forEach(function(id){
     $(id).addEventListener('input',calc);
   });
   calc();
