@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Last 30 — HALF Skills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- One web font for character; degrades to system stack if offline. Strip this line for a fully offline build. -->
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --font-display:"Barlow Semi Condensed", system-ui, -apple-system, sans-serif;
+    --font-body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono:ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+    --warn:#f59e0b; --ok:#34d399;
+  }
+  html[data-theme="dark"]{
+    --bg:#0d1014; --panel:#161b22; --panel-2:#1f2630; --line:#2b333f;
+    --text:#f3f6fa; --muted:#9aa6b5; --shadow:0 6px 24px rgba(0,0,0,.45);
+  }
+  html[data-theme="light"]{
+    --bg:#eef1f5; --panel:#ffffff; --panel-2:#f4f7fa; --line:#d6dde6;
+    --text:#0f1722; --muted:#5a6675; --shadow:0 6px 20px rgba(20,30,50,.10);
+  }
+  /* Category colours */
+  :root{
+    --cat-airway:#22d3ee; --cat-cardiac:#f43f5e; --cat-trauma:#fb923c;
+    --cat-peds:#a78bfa; --cat-ob:#f472b6; --cat-medical:#34d399;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--font-body); font-size:17px; line-height:1.5;}
+
+  /* ---------- Header ---------- */
+  header{position:sticky; top:0; z-index:30; background:var(--bg);
+    border-bottom:1px solid var(--line); padding:14px 16px 10px;}
+  .brand{display:flex; align-items:center; gap:10px; justify-content:space-between;}
+  .wordmark{font-family:var(--font-display); font-weight:800; letter-spacing:.5px;
+    font-size:22px; text-transform:uppercase; line-height:1; display:flex; align-items:baseline; gap:8px;}
+  .wordmark b{color:var(--cat-cardiac);}
+  .wordmark span{font-size:12px; font-weight:600; color:var(--muted); letter-spacing:2px;}
+  .iconbtn{background:var(--panel); border:1px solid var(--line); color:var(--text);
+    width:44px; height:44px; border-radius:12px; font-size:20px; cursor:pointer; flex:none;}
+  .search{width:100%; margin-top:12px; padding:14px 16px; font-size:17px;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; color:var(--text);}
+  .search::placeholder{color:var(--muted);}
+  .chips{display:flex; gap:8px; overflow-x:auto; padding:12px 2px 2px;
+    scrollbar-width:none;} .chips::-webkit-scrollbar{display:none;}
+  .chip{flex:none; padding:9px 14px; border-radius:999px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-weight:700; font-size:14px;
+    font-family:var(--font-display); letter-spacing:.4px; text-transform:uppercase; cursor:pointer; white-space:nowrap;}
+  .chip[data-active="true"]{color:var(--bg); background:var(--text); border-color:var(--text);}
+
+  /* ---------- Grid ---------- */
+  main{padding:14px 16px 40px; max-width:760px; margin:0 auto;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;}
+  .card{position:relative; background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; padding:16px 14px 16px 18px; cursor:pointer; min-height:118px;
+    display:flex; flex-direction:column; gap:6px; box-shadow:var(--shadow); transition:transform .08s ease;}
+  .card:active{transform:scale(.97);}
+  .card::before{content:""; position:absolute; left:0; top:14px; bottom:14px; width:5px;
+    border-radius:0 4px 4px 0; background:var(--cat);}
+  .card .cat{font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:1.2px;
+    text-transform:uppercase; color:var(--cat);}
+  .card .name{font-family:var(--font-display); font-weight:700; font-size:20px; line-height:1.05;}
+  .card .ind{font-size:13px; color:var(--muted); margin-top:auto;}
+  .empty{color:var(--muted); text-align:center; padding:40px 10px;}
+
+  /* ---------- Detail overlay ---------- */
+  .detail{position:fixed; inset:0; z-index:50; background:var(--bg); overflow-y:auto;
+    transform:translateY(100%); transition:transform .2s ease; visibility:hidden;}
+  .detail[data-open="true"]{transform:translateY(0); visibility:visible;}
+  .dhead{position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line);
+    padding:14px 16px; display:flex; align-items:center; gap:12px; z-index:5;}
+  .dhead::before{content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--cat);}
+  .back{background:var(--panel); border:1px solid var(--line); color:var(--text);
+    border-radius:12px; padding:10px 16px; font-weight:700; font-size:16px; cursor:pointer; flex:none;}
+  .dtitle{font-family:var(--font-display); font-weight:800; font-size:24px; line-height:1; text-transform:uppercase;}
+  .dtitle small{display:block; font-size:12px; letter-spacing:1.5px; color:var(--cat); margin-bottom:3px;}
+  .dbody{padding:18px 16px 60px; max-width:760px; margin:0 auto;}
+
+  .verify{background:rgba(245,158,11,.12); border:1px solid var(--warn); color:var(--warn);
+    border-radius:12px; padding:10px 14px; font-size:13px; font-weight:600; margin-bottom:18px;}
+  .indication{background:var(--panel-2); border-left:5px solid var(--cat); border-radius:12px;
+    padding:14px 16px; font-size:18px; font-weight:600; margin-bottom:22px;}
+
+  .sec{margin-bottom:26px;}
+  .sec h3{font-family:var(--font-display); text-transform:uppercase; letter-spacing:1px;
+    font-size:14px; color:var(--muted); margin:0 0 10px; display:flex; align-items:center; gap:8px;}
+  .sec h3 .dot{width:10px; height:10px; border-radius:3px; background:var(--cat);}
+
+  /* checklist */
+  .step{display:flex; gap:14px; align-items:flex-start; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:15px 16px; margin-bottom:10px;
+    cursor:pointer; font-size:17px; font-weight:600; line-height:1.35;}
+  .step .box{flex:none; width:30px; height:30px; border-radius:9px; border:2px solid var(--cat);
+    display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--cat); font-size:15px; margin-top:1px;}
+  .step[data-done="true"]{opacity:.5;}
+  .step[data-done="true"] .txt{text-decoration:line-through;}
+  .step[data-done="true"] .box{background:var(--cat); color:var(--bg);}
+  .reset{background:none; border:1px solid var(--line); color:var(--muted); border-radius:10px;
+    padding:8px 14px; font-size:14px; font-weight:600; cursor:pointer; margin-top:2px;}
+
+  /* numbers / dosing */
+  .nums{background:#000; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  html[data-theme="light"] .nums{background:#0f1722;}
+  .numrow{display:flex; justify-content:space-between; gap:14px; padding:13px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08); font-family:var(--font-mono);}
+  .numrow:last-child{border-bottom:none;}
+  .numrow .k{color:#9aa6b5; font-size:14px;}
+  .numrow .v{color:#fff; font-weight:700; font-size:18px; text-align:right;}
+
+  /* video */
+  .video{position:relative; aspect-ratio:16/9; background:var(--panel-2);
+    border:1px dashed var(--line); border-radius:14px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:8px; color:var(--muted); text-align:center; padding:16px;}
+  .video .play{width:58px; height:58px; border-radius:50%; background:var(--cat); color:var(--bg);
+    display:flex; align-items:center; justify-content:center; font-size:24px;}
+  .video code{font-size:11px; background:var(--bg); padding:6px 8px; border-radius:6px; color:var(--text);}
+  .video iframe{width:100%; height:100%; border:0; border-radius:14px;}
+
+  /* pitfalls */
+  .pitfall{display:flex; gap:12px; background:rgba(244,63,94,.10);
+    border:1px solid rgba(244,63,94,.4); border-radius:12px; padding:13px 15px; margin-bottom:10px; font-size:16px;}
+  .pitfall .x{color:var(--cat-cardiac); font-weight:800; flex:none;}
+
+  .reassess{background:var(--cat); color:#06121a; border-radius:12px; padding:13px 16px;
+    font-weight:800; font-family:var(--font-display); letter-spacing:.5px; text-transform:uppercase;
+    text-align:center; font-size:16px; margin-bottom:24px;}
+
+  .meta{font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px;}
+  .meta b{color:var(--text);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="wordmark">The&nbsp;Last&nbsp;<b>30</b> <span>HALF&nbsp;SKILLS</span></div>
+    <button class="iconbtn" id="themeBtn" title="Toggle light/dark" aria-label="Toggle theme">◐</button>
+  </div>
+  <input class="search" id="search" type="search" placeholder="Search a skill…" autocomplete="off">
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No skills match. Try a different term.</div>
+</main>
+
+<section class="detail" id="detail" aria-hidden="true"></section>
+
+<script>
+/* =========================================================================
+   CONTENT LIVES HERE.  This array is your "database" — fully editable, fully
+   yours, stored right in this file. Add a skill by copying one block.
+
+   ⚠ ALL CLINICAL CONTENT BELOW IS PLACEHOLDER STRUCTURE ONLY.
+     Replace every step / dose / number with your RPPEO + ALS-PCS + OPS
+     medical-direction-approved content before this goes anywhere near a truck.
+
+   Fields:
+     id        unique short id (used for checklist state)
+     cat       one of: airway | cardiac | trauma | peds | ob | medical
+     name      skill title
+     indication one-line "when do I use this"
+     steps[]   critical actions, in order
+     numbers[] {k:label, v:value}  e.g. doses, settings, landmarks
+     video     a YouTube/Vimeo EMBED url (see note), or "" to show the slot
+     pitfalls[] common errors / "do NOT" items
+     reassess  one-line repeating reminder
+     source    governance line (protocol ref + last reviewed date)
+   ========================================================================= */
+const CAT = {
+  airway:{label:"Airway / Breathing", color:"var(--cat-airway)"},
+  cardiac:{label:"Cardiac", color:"var(--cat-cardiac)"},
+  trauma:{label:"Trauma", color:"var(--cat-trauma)"},
+  peds:{label:"Pediatric", color:"var(--cat-peds)"},
+  ob:{label:"Obstetric", color:"var(--cat-ob)"},
+  medical:{label:"Medical / Tox", color:"var(--cat-medical)"},
+};
+
+const SKILLS = [
+  {
+    id:"needle-d", cat:"trauma", name:"Needle Decompression",
+    indication:"Suspected tension pneumothorax with haemodynamic compromise.",
+    steps:[
+      "Confirm indication: severe respiratory distress + signs of obstructive shock.",
+      "Identify landmark [insert your approved site].",
+      "Prep skin; prepare large-bore catheter.",
+      "Insert per technique [insert approved technique].",
+      "Listen for release; secure catheter.",
+      "Reassess ventilation and perfusion immediately."
+    ],
+    numbers:[
+      {k:"Catheter", v:"[size]"},
+      {k:"Landmark", v:"[site per protocol]"},
+      {k:"Reassess", v:"continuous"}
+    ],
+    video:"",
+    pitfalls:[
+      "Do not delay decompression for imaging if the patient is crashing.",
+      "Wrong landmark / too-short catheter = failed decompression.",
+      "Failure to reassess and repeat if signs recur."
+    ],
+    reassess:"Re-check breath sounds + vitals after every intervention",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  },
+  {
+    id:"peds-arrest", cat:"peds", name:"Pediatric Cardiac Arrest",
+    indication:"Unresponsive child, no normal breathing, no pulse.",
+    steps:[
+      "Start high-quality CPR; confirm rate and depth for age.",
+      "Attach monitor / pads; determine rhythm.",
+      "Establish IV/IO access early.",
+      "Use length/weight tool for all weight-based values [Broselow or service equivalent].",
+      "Treat reversible causes (Hs & Ts).",
+      "Coordinate closed-loop team communication."
+    ],
+    numbers:[
+      {k:"Compression rate", v:"[per guideline]"},
+      {k:"Epi dose", v:"[weight-based — verify]"},
+      {k:"Energy (defib)", v:"[weight-based — verify]"}
+    ],
+    video:"",
+    pitfalls:[
+      "Estimating weight from memory instead of using the tape.",
+      "Interruptions in compressions during rhythm checks.",
+      "Forgetting to address hypoglycaemia and hypothermia."
+    ],
+    reassess:"Rhythm + pulse check on protocol interval — minimise pauses",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  },
+  {
+    id:"pph", cat:"ob", name:"Postpartum Haemorrhage",
+    indication:"Excessive bleeding following delivery.",
+    steps:[
+      "Call for help; prepare for rapid transport.",
+      "Fundal massage.",
+      "Encourage breastfeeding / nipple stimulation if appropriate.",
+      "Manage per haemorrhage protocol [insert].",
+      "Treat for shock; large-bore access.",
+      "Document estimated blood loss and timeline."
+    ],
+    numbers:[
+      {k:"Fundal massage", v:"firm, continuous"},
+      {k:"Access", v:"2x large-bore"},
+      {k:"Meds", v:"[per protocol]"}
+    ],
+    video:"",
+    pitfalls:[
+      "Underestimating blood loss.",
+      "Delaying transport while attempting field control.",
+      "Neglecting maternal mental status as a shock indicator."
+    ],
+    reassess:"Re-check tone, bleeding, and maternal vitals frequently",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  },
+  {
+    id:"pacing", cat:"cardiac", name:"Transcutaneous Pacing",
+    indication:"Symptomatic bradycardia unresponsive to first-line treatment.",
+    steps:[
+      "Confirm symptomatic brady + indication per protocol.",
+      "Apply pacing pads correctly; attach monitor leads.",
+      "Set rate [per protocol]; start current low.",
+      "Increase current until electrical + mechanical capture.",
+      "Confirm capture by pulse, not monitor alone.",
+      "Consider analgesia/sedation per protocol."
+    ],
+    numbers:[
+      {k:"Rate", v:"[set per protocol]"},
+      {k:"mA", v:"titrate to capture"},
+      {k:"Confirm", v:"mechanical pulse"}
+    ],
+    video:"",
+    pitfalls:[
+      "Assuming electrical capture = mechanical capture.",
+      "Forgetting the patient is awake and in pain.",
+      "Pad placement errors causing failure to capture."
+    ],
+    reassess:"Confirm a pulse matches the paced rate — reassess perfusion",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  },
+  {
+    id:"cric", cat:"airway", name:"Surgical Cricothyrotomy",
+    indication:"Can't intubate, can't oxygenate — failed airway per protocol.",
+    steps:[
+      "Declare failed airway; call resources.",
+      "Identify landmarks [per approved technique].",
+      "Perform per service-approved technique.",
+      "Confirm placement (EtCO₂ + chest rise).",
+      "Secure the airway device.",
+      "Reassess oxygenation and ventilation."
+    ],
+    numbers:[
+      {k:"Indication", v:"CICO"},
+      {k:"Confirm", v:"EtCO₂ waveform"},
+      {k:"Authority", v:"[scope/medical direction]"}
+    ],
+    video:"",
+    pitfalls:[
+      "Hesitation — this is a time-critical last resort.",
+      "Misidentified landmarks.",
+      "No post-procedure confirmation of placement."
+    ],
+    reassess:"Continuous EtCO₂ + SpO₂ after the airway is secured",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  },
+  {
+    id:"io", cat:"medical", name:"Intraosseous Access",
+    indication:"Need for vascular access when IV is unavailable/delayed in a critical patient.",
+    steps:[
+      "Select site [per protocol]; avoid contraindicated sites.",
+      "Prep skin.",
+      "Insert IO device per technique.",
+      "Confirm placement (stability + flush).",
+      "Flush per protocol; consider analgesia in conscious patients.",
+      "Secure and label as IO."
+    ],
+    numbers:[
+      {k:"Sites", v:"[approved sites]"},
+      {k:"Flush", v:"[per protocol]"},
+      {k:"Conscious pt", v:"consider analgesia"}
+    ],
+    video:"",
+    pitfalls:[
+      "Using a contraindicated limb (fracture, prior attempt, infection).",
+      "Not flushing — leads to poor flow.",
+      "Forgetting IO is painful in the conscious patient."
+    ],
+    reassess:"Recheck site for infiltration before and during infusion",
+    source:"PLACEHOLDER · Align to ALS-PCS / RPPEO · Last reviewed: —"
+  }
+];
+
+/* ---------------- App logic (no need to edit below) ---------------- */
+const state = {q:"", cat:"all", checked:{}, theme:"dark"};
+const grid = document.getElementById("grid");
+const empty = document.getElementById("empty");
+const chips = document.getElementById("chips");
+const detail = document.getElementById("detail");
+
+// build chips
+const cats = [["all","All"], ...Object.entries(CAT).map(([k,v])=>[k,v.label])];
+chips.innerHTML = cats.map(([k,l])=>
+  `<button class="chip" data-cat="${k}" data-active="${k==='all'}">${l}</button>`).join("");
+chips.addEventListener("click", e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  state.cat=b.dataset.cat;
+  [...chips.children].forEach(c=>c.dataset.active=(c.dataset.cat===state.cat));
+  render();
+});
+
+document.getElementById("search").addEventListener("input", e=>{
+  state.q=e.target.value.toLowerCase().trim(); render();
+});
+
+document.getElementById("themeBtn").addEventListener("click", ()=>{
+  state.theme = state.theme==="dark" ? "light":"dark";
+  document.documentElement.dataset.theme = state.theme;
+});
+
+function render(){
+  const list = SKILLS.filter(s=>{
+    const okCat = state.cat==="all" || s.cat===state.cat;
+    const hay = (s.name+" "+s.indication+" "+CAT[s.cat].label).toLowerCase();
+    return okCat && hay.includes(state.q);
+  });
+  empty.hidden = list.length>0;
+  grid.innerHTML = list.map(s=>`
+    <div class="card" style="--cat:${CAT[s.cat].color}" data-id="${s.id}">
+      <div class="cat">${CAT[s.cat].label}</div>
+      <div class="name">${s.name}</div>
+      <div class="ind">${s.indication}</div>
+    </div>`).join("");
+}
+grid.addEventListener("click", e=>{
+  const c=e.target.closest(".card"); if(!c) return;
+  openDetail(c.dataset.id);
+});
+
+function openDetail(id){
+  const s = SKILLS.find(x=>x.id===id); if(!s) return;
+  const color = CAT[s.cat].color;
+  if(!state.checked[id]) state.checked[id]={};
+  const videoBlock = s.video
+    ? `<div class="video"><iframe src="${s.video}" allowfullscreen loading="lazy" title="${s.name} video"></iframe></div>`
+    : `<div class="video"><div class="play">▶</div>
+         <div>Drop a Vimeo / YouTube embed URL into this skill's <code>video</code> field.</div>
+         <code>https://www.youtube.com/embed/VIDEO_ID</code></div>`;
+
+  detail.innerHTML = `
+    <div class="dhead" style="--cat:${color}">
+      <button class="back" id="backBtn">‹ Back</button>
+      <div class="dtitle"><small>${CAT[s.cat].label}</small>${s.name}</div>
+    </div>
+    <div class="dbody" style="--cat:${color}">
+      <div class="verify">⚠ Placeholder content — verify against ALS-PCS / RPPEO / OPS medical direction before use.</div>
+      <div class="indication">${s.indication}</div>
+
+      <div class="sec">
+        <h3><span class="dot"></span>Critical Actions</h3>
+        <div id="steps">${s.steps.map((t,i)=>`
+          <div class="step" data-i="${i}" data-done="${!!state.checked[id][i]}">
+            <div class="box">${state.checked[id][i]?"✓":i+1}</div>
+            <div class="txt">${t}</div>
+          </div>`).join("")}</div>
+        <button class="reset" id="resetBtn">Reset checklist</button>
+      </div>
+
+      <div class="sec">
+        <h3><span class="dot"></span>Key Numbers</h3>
+        <div class="nums">${s.numbers.map(n=>`
+          <div class="numrow"><span class="k">${n.k}</span><span class="v">${n.v}</span></div>`).join("")}</div>
+      </div>
+
+      <div class="sec">
+        <h3><span class="dot"></span>Video</h3>${videoBlock}
+      </div>
+
+      <div class="sec">
+        <h3><span class="dot"></span>Pitfalls</h3>
+        ${s.pitfalls.map(p=>`<div class="pitfall"><span class="x">✕</span><span>${p}</span></div>`).join("")}
+      </div>
+
+      <div class="reassess">↻ ${s.reassess}</div>
+      <div class="meta"><b>Source:</b> ${s.source}</div>
+    </div>`;
+
+  detail.dataset.open="true"; detail.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+
+  detail.querySelector("#backBtn").onclick = closeDetail;
+  detail.querySelector("#resetBtn").onclick = ()=>{ state.checked[id]={}; openDetail(id); };
+  detail.querySelector("#steps").addEventListener("click", ev=>{
+    const st=ev.target.closest(".step"); if(!st) return;
+    const i=st.dataset.i; state.checked[id][i]=!state.checked[id][i];
+    st.dataset.done=state.checked[id][i];
+    st.querySelector(".box").textContent = state.checked[id][i] ? "✓" : (Number(i)+1);
+  });
+}
+function closeDetail(){
+  detail.dataset.open="false"; detail.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+}
+
+render();
+</script>
+</body>
+</html>
