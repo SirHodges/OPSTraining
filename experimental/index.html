@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continuing-education credit program — T&D staffing model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF1F0; --surface:#FFFFFF; --surface-2:#F6F8F7;
+    --ink:#15211F; --ink-soft:#48544F; --ink-faint:#7C8782;
+    --line:rgba(21,33,31,.12); --line-soft:rgba(21,33,31,.07);
+    --accent:#0F6E56; --accent-soft:#E1F0EB; --accent-ink:#0A4A3B;
+    --c-deliver:#1D9E75;  --c-build:#3F6FA5;  --c-overhead:#C2410C;  --c-fixed:#8A938F;
+    --shadow:0 1px 2px rgba(21,33,31,.05),0 8px 24px rgba(21,33,31,.05);
+    --r:12px; --r-sm:8px;
+    --display:"Space Grotesk",system-ui,sans-serif;
+    --body:"Inter",system-ui,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0E1614; --surface:#16211E; --surface-2:#1B2825;
+      --ink:#E8EEEB; --ink-soft:#A8B4AF; --ink-faint:#71807A;
+      --line:rgba(232,238,235,.14); --line-soft:rgba(232,238,235,.07);
+      --accent:#3FC79E; --accent-soft:#13312A; --accent-ink:#7EE0C2;
+      --c-deliver:#3FC79E; --c-build:#6EA2D6; --c-overhead:#F08A4B; --c-fixed:#9BA59F;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);
+    line-height:1.65;-webkit-font-smoothing:antialiased;padding:32px 20px 80px}
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--accent)}
+
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 10px}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.1;
+    letter-spacing:-.01em;margin:0 0 12px}
+  .lede{font-size:16px;color:var(--ink-soft);max-width:62ch;margin:0 0 4px}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);padding:24px 24px 26px;margin-top:24px}
+  .panel-head{font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-faint);margin:0 0 18px;display:flex;align-items:center;gap:8px}
+  .panel-head::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+  /* controls */
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px 28px}
+  .ctrl-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+  .ctrl-label{font-size:13.5px;font-weight:500;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
+  .ctrl-val{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink)}
+  .remainder{font-size:13.5px;font-weight:500;color:var(--ink-soft)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+    background:var(--line);outline:none;margin:6px 0 0;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--surface);border:2px solid var(--accent);box-shadow:0 1px 3px rgba(21,33,31,.25);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);
+    border:2px solid var(--accent);cursor:pointer}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--accent-soft)}
+  .track{height:18px;display:flex;align-items:center}
+  .track > div{height:4px;width:100%;background:var(--line);border-radius:3px;overflow:hidden}
+  .track > div > i{display:block;height:100%;background:var(--ink-faint);border-radius:3px}
+
+  /* info tooltip */
+  .info{position:relative;display:inline-flex;width:16px;height:16px;border-radius:50%;
+    border:1px solid var(--line);color:var(--ink-faint);font-size:10px;font-weight:600;
+    align-items:center;justify-content:center;cursor:help;font-family:var(--body);flex:0 0 auto}
+  .info:hover,.info:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+  .info .tip{position:absolute;bottom:150%;left:50%;transform:translateX(-50%) translateY(4px);
+    width:230px;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:400;line-height:1.5;
+    padding:10px 12px;border-radius:var(--r-sm);box-shadow:0 8px 24px rgba(0,0,0,.25);
+    opacity:0;pointer-events:none;transition:opacity .14s,transform .14s;z-index:20;text-align:left}
+  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:var(--ink)}
+  .info:hover .tip,.info:focus-visible .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-width:560px){.info .tip{width:170px}}
+
+  /* readouts */
+  .readouts{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:14px}
+  @media (max-width:680px){.readouts{grid-template-columns:1fr 1fr}}
+  .readout{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r);padding:16px 18px}
+  .readout.hero{background:var(--accent-soft);border-color:transparent}
+  .readout .k{font-size:12px;color:var(--ink-faint);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+  .readout.hero .k{color:var(--accent-ink)}
+  .readout .v{font-family:var(--mono);font-weight:500;font-size:22px;color:var(--ink);line-height:1}
+  .readout.hero .v{font-size:34px;color:var(--accent-ink)}
+  .readout .v small{font-size:14px;font-weight:400;color:var(--ink-faint);margin-left:2px}
+  .readout.hero .v small{color:var(--accent-ink);opacity:.7}
+
+  /* bars */
+  .bar-row{display:flex;align-items:center;gap:14px;padding:7px 0}
+  .bar-row .name{flex:0 0 190px;font-size:13.5px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+  .bar-row .dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+  .bar-row .meter{flex:1;height:24px;background:var(--surface-2);border-radius:var(--r-sm);overflow:hidden;position:relative}
+  .bar-row .meter > span{position:absolute;inset:0;width:0;border-radius:var(--r-sm);transition:width .3s ease}
+  .bar-row .num{flex:0 0 70px;text-align:right;font-family:var(--mono);font-size:13.5px;font-weight:500}
+  @media (max-width:560px){.bar-row .name{flex-basis:130px;font-size:12.5px}.bar-row .num{flex-basis:54px}}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:18px 0 0;padding-top:16px;border-top:1px solid var(--line-soft)}
+  .legend span{font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
+  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  /* explanations */
+  .explain{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:680px){.explain{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;border-left-width:3px}
+  .card h4{margin:0 0 4px;font-family:var(--display);font-weight:500;font-size:15px;display:flex;
+    align-items:center;justify-content:space-between;gap:10px}
+  .card .scale{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;white-space:nowrap;font-weight:500}
+  .sc-head{background:rgba(194,65,12,.13);color:var(--c-overhead)}
+  .sc-cat{background:rgba(63,111,165,.14);color:var(--c-build)}
+  .sc-fixed{background:rgba(138,147,143,.18);color:var(--ink-soft)}
+  .card p{margin:8px 0 0;font-size:13.5px;color:var(--ink-soft)}
+  .card .drv{margin:10px 0 0;font-size:12.5px;color:var(--ink-faint)}
+  .card .drv b{color:var(--ink-soft);font-weight:500}
+
+  .note{font-size:13px;color:var(--ink-soft);background:var(--surface-2);border-radius:var(--r);
+    padding:14px 16px;margin-top:14px;border:1px solid var(--line-soft)}
+  .note b{color:var(--ink);font-weight:500}
+
+  details{margin-top:14px;border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+  summary{cursor:pointer;padding:13px 16px;font-size:13.5px;font-weight:500;color:var(--ink-soft);
+    list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";font-family:var(--mono);color:var(--accent);font-weight:600}
+  details[open] summary::before{content:"–"}
+  details .body{padding:0 16px 16px;font-size:13px;color:var(--ink-soft)}
+  details .body ul{margin:4px 0 0;padding-left:18px}
+  details .body li{margin:5px 0}
+
+  footer{margin-top:34px;font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Training &amp; Development · resourcing model</p>
+  <h1>What it takes to run an 800-staff credit program</h1>
+  <p class="lede">A planning model for a 24-credit / year continuing-education requirement. Move the controls to match how you'd actually deliver it, and watch the staffing estimate respond. Every control and every cost line is explained below — hover the <span class="info" tabindex="0" aria-label="example tooltip">i<span class="tip">Like this. Hover or tab to any of these for a quick definition.</span></span> markers for a quick note.</p>
+
+  <!-- CONTROLS -->
+  <section class="panel">
+    <h3 class="panel-head">Set your delivery model</h3>
+    <div class="controls">
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Small-class ILT share
+            <span class="info" tabindex="0" aria-label="about small-class share">i<span class="tip">Portion of each person's 24 credits taught in small instructor-led classes (~30 in a room). The most learning-intensive format — and the most expensive, because every cohort is a fresh live delivery. Pushing this up raises delivery, prep, and scheduling load.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_small">58%</span>
+        </div>
+        <input id="s_small" type="range" min="0" max="100" step="1" value="58">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Conference-style share
+            <span class="info" tabindex="0" aria-label="about conference share">i<span class="tip">Portion taught in larger rooms (~50, two instructors). Far more efficient per head than small classes, so shifting credits here lowers cost — at the price of less hands-on interaction.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_conf">25%</span>
+        </div>
+        <input id="s_conf" type="range" min="0" max="100" step="1" value="25">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="remainder">eLearning (remainder)
+            <span class="info" tabindex="0" aria-label="about elearning remainder">i<span class="tip">Whatever credits aren't instructor-led become self-paced online modules. These cost real money to build once, but then deliver to all 800 with almost no per-person delivery cost. Set by the two sliders above.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_el">17%</span>
+        </div>
+        <div class="track"><div><i id="bar_el" style="width:17%"></i></div></div>
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Small class size
+            <span class="info" tabindex="0" aria-label="about class size">i<span class="tip">Students per small ILT session. Smaller classes teach skills better but multiply the number of cohorts you must deliver and schedule. Drop this from 30 to 20 and watch the FTE jump.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_size">30</span>
+        </div>
+        <input id="s_size" type="range" min="10" max="60" step="1" value="30">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Taught by others
+            <span class="info" tabindex="0" aria-label="about external share">i<span class="tip">Share of live teaching handed to external instructors. Removes those hours from your own team's delivery load, but adds contracting, briefing, and quality-assurance coordination in their place.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_ext">20%</span>
+        </div>
+        <input id="s_ext" type="range" min="0" max="60" step="1" value="20">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Curriculum paths
+            <span class="info" tabindex="0" aria-label="about paths">i<span class="tip">Number of distinct role/level curricula (e.g. PCP, ACP, specialty teams). More paths means more separate content to build and maintain — this drives content cost, not delivery cost.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_paths">3</span>
+        </div>
+        <input id="s_paths" type="range" min="1" max="6" step="1" value="3">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Admin hrs / person / yr
+            <span class="info" tabindex="0" aria-label="about admin">i<span class="tip">Per-staff tracking: enrolment, credit reconciliation across paths, exception handling, and chasing the last stragglers. This is the lever you can engineer down with a Power Apps / SuccessFactors workflow.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_admin">1.25</span>
+        </div>
+        <input id="s_admin" type="range" min="0" max="3" step="0.25" value="1.25">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Logistics hrs / session
+            <span class="info" tabindex="0" aria-label="about logistics">i<span class="tip">Coordination per live session instance: booking rooms and equipment, building the roster, reminders, capturing sign-in, entering attendance. Multiplies by the number of sessions you run.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_sched">3</span>
+        </div>
+        <input id="s_sched" type="range" min="0" max="8" step="0.5" value="3">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CAPACITY -->
+  <section class="panel">
+    <h3 class="panel-head">From paid hours to real capacity</h3>
+    <p class="lede" style="font-size:14.5px;margin-bottom:20px">A full-time municipal post is paid for ~2,080 hours, but almost no program runs on that figure. Subtract leave, the team's own training, and the share of the working day that goes to meetings, admin, and breaks, and you get the hours actually available for <i>this</i> program — the honest denominator for any staffing ask.</p>
+    <div class="controls">
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Paid hours / yr
+            <span class="info" tabindex="0" aria-label="about paid hours">i<span class="tip">Gross contracted hours for one full-time post. 2,080 = a 40-hour week; some municipal admin posts run a 35-hour week (~1,820). The starting point before any deductions.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_paid">2,080</span>
+        </div>
+        <input id="s_paid" type="range" min="1820" max="2080" step="20" value="2080">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Vacation (weeks)
+            <span class="info" tabindex="0" aria-label="about vacation">i<span class="tip">Unionized municipal entitlement scales with seniority — commonly 4 weeks mid-career, 5–6 for senior staff. Set this to the band your actual team sits in, not the minimum.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_vac">4</span>
+        </div>
+        <input id="s_vac" type="range" min="2" max="7" step="1" value="4">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Statutory holidays (days)
+            <span class="info" tabindex="0" aria-label="about holidays">i<span class="tip">Ontario's ESA sets 9 public holidays; municipalities commonly observe a few more (civic holiday, float days). Paid, but not available for program work.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_stat">11</span>
+        </div>
+        <input id="s_stat" type="range" min="9" max="14" step="1" value="11">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Sick / personal (days)
+            <span class="info" tabindex="0" aria-label="about sick">i<span class="tip">Budgeted average usage, not the entitlement cap. Public-sector averages often run higher than people expect — plan for what actually gets taken across the team.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_sick">6</span>
+        </div>
+        <input id="s_sick" type="range" min="0" max="15" step="1" value="6">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">Own CE + mandatory training (hrs)
+            <span class="info" tabindex="0" aria-label="about own ce">i<span class="tip">Instructors maintaining their own credentials and recerts, plus corporate mandatory training (privacy, AODA, WHMIS). Your T&amp;D staff are also subject to this very 24-credit requirement — count it.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_ce">60</span>
+        </div>
+        <input id="s_ce" type="range" min="0" max="160" step="10" value="60">
+      </div>
+
+      <div>
+        <div class="ctrl-top">
+          <span class="ctrl-label">On-program utilization (%)
+            <span class="info" tabindex="0" aria-label="about utilization">i<span class="tip">Share of remaining working hours that lands on actual program work, after general meetings, email, corporate admin, paid breaks, supervisory duties, and context-switching. Knowledge work is roughly 70–80%; unionized public-sector planning leans to the lower end.</span></span>
+          </span>
+          <span class="ctrl-val" id="o_util">78%</span>
+        </div>
+        <input id="s_util" type="range" min="50" max="95" step="1" value="78">
+      </div>
+
+    </div>
+
+    <div class="readouts" style="grid-template-columns:1fr 1fr 1fr;margin-top:22px">
+      <div class="readout">
+        <p class="k">Paid hours</p>
+        <div class="v" id="m_paid">2,080</div>
+      </div>
+      <div class="readout">
+        <p class="k">Hours actually at work</p>
+        <div class="v" id="m_atwork">1,724</div>
+      </div>
+      <div class="readout hero">
+        <p class="k">Effective hrs / FTE
+          <span class="info" tabindex="0" aria-label="about effective hours">i<span class="tip">What one full-time post truly delivers against this program after both haircuts. This — not 2,080, not a round 1,800 — is the denominator the estimate uses.</span></span>
+        </p>
+        <div class="v" id="m_eff">1,345</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- READOUTS -->
+  <section class="panel">
+    <h3 class="panel-head">The estimate</h3>
+    <div class="readouts">
+      <div class="readout hero">
+        <p class="k">Steady-state staffing
+          <span class="info" tabindex="0" aria-label="about fte">i<span class="tip">Total T&amp;D workload divided by the effective hours one FTE delivers (derived in the capacity panel above), not a round number. Recurring effort — Year 1 runs higher (see note below).</span></span>
+        </p>
+        <div class="v" id="m_fte">1.85<small>FTE</small></div>
+      </div>
+      <div class="readout">
+        <p class="k">T&amp;D hrs / yr</p>
+        <div class="v" id="m_total">3,330</div>
+      </div>
+      <div class="readout">
+        <p class="k">Live sessions / yr</p>
+        <div class="v" id="m_sess">117</div>
+      </div>
+      <div class="readout">
+        <p class="k">Front-line hrs pulled
+          <span class="info" tabindex="0" aria-label="about front-line hours">i<span class="tip">800 staff × 24 credits of paramedic time taken off the road — about 10.7 FTE-equivalent. Not a T&amp;D cost, but the largest organisational cost of the program, and the figure leadership will ask about first.</span></span>
+        </p>
+        <div class="v" id="m_learner">19,200</div>
+      </div>
+    </div>
+
+    <div class="bars" id="bars" style="margin-top:22px"></div>
+
+    <div class="legend">
+      <span><i style="background:var(--c-deliver)"></i> Live delivery</span>
+      <span><i style="background:var(--c-build)"></i> Content creation</span>
+      <span><i style="background:var(--c-overhead)"></i> Headcount-driven overhead</span>
+      <span><i style="background:var(--c-fixed)"></i> Fixed / external</span>
+    </div>
+
+    <div class="note" id="hint"></div>
+  </section>
+
+  <!-- EXPLANATIONS -->
+  <section class="panel">
+    <h3 class="panel-head">What each cost line means</h3>
+    <p class="lede" style="font-size:14.5px;margin-bottom:20px">The tag on each card is the thing to internalise: a line either grows with your <b style="color:var(--c-overhead)">800 staff</b>, grows with your <b style="color:var(--c-build)">content catalogue</b>, or stays roughly <b style="color:var(--ink-soft)">fixed</b>. Instructor-led delivery is what tips a program toward the headcount-driven side, which is why the model is so sensitive to the format mix.</p>
+    <div class="explain" id="cards"></div>
+  </section>
+
+  <details>
+    <summary>Fixed assumptions baked into the model</summary>
+    <div class="body">
+      These stay constant as you move the sliders. Adjust them in the code if your reality differs.
+      <ul>
+        <li>Conference sessions seat 50 with 2 instructors; small classes use 2 instructors; sessions average 4 hours.</li>
+        <li>Delivery prep runs at 0.5× contact time (re-prep and setup for an already-built session, not first build).</li>
+        <li>eLearning build ≈ 60 hours of work per finished hour; instructor-led materials ≈ 15 hours per finished hour.</li>
+        <li>Half the content catalogue is refreshed or rebuilt each year; multiple paths multiply the distinct content.</li>
+        <li>Program governance is held flat at 300 hrs/yr. One FTE's effective capacity is no longer a fixed number — it's built up in the capacity panel from leave, own training, and on-program utilization, so the staffing figure reflects a real municipal post rather than a paper 2,080 hours.</li>
+        <li><b>Year 1 is not steady state.</b> Add the full initial catalogue build plus framework, policy, and LMS standup — budget meaningfully higher for the first year.</li>
+      </ul>
+    </div>
+  </details>
+
+  <footer>
+    Planning estimate only — development ratios are industry bands, not your measured figures. No staff data or payment information is used or stored.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var STAFF=800,CREDITS=24,SESSLEN=4,INSTR=2,CONFSIZE=50,
+      PREP=0.5,ELRATIO=60,ILTRATIO=15,REFRESH=0.5,GOV=300,EXTCOORD=4;
+
+  var META=[
+    {key:'del',name:'Internal delivery',color:'var(--c-deliver)',cls:'sc-head',scale:'Scales with staff',
+     title:'Internal delivery (contact)',
+     body:'The live hours your own instructors spend in front of staff. Every cohort of 30 is a separate delivery, so this is the engine of an instructor-led model.',
+     drivers:'Format mix, class size, and how much teaching you outsource. Smaller classes mean more cohorts mean more hours.'},
+    {key:'prep',name:'Delivery prep',color:'var(--c-deliver)',cls:'sc-head',scale:'Scales with staff',
+     title:'Delivery prep',
+     body:'Readying an already-built session for each run: review, room and kit setup, last-minute tailoring, travel between sites. Modelled at half the contact time.',
+     drivers:'The number of deliveries — so it rises and falls with everything that moves the delivery line above it.'},
+    {key:'ilt',name:'ILT content build',color:'var(--c-build)',cls:'sc-cat',scale:'Scales with catalogue',
+     title:'ILT content build / refresh',
+     body:'Annual effort to build and update facilitator guides, slides, scenarios, and skill stations for instructor-led content. Build once, deliver to many — so it does not grow with headcount.',
+     drivers:'How much of the 24 credits is instructor-led, and how many curriculum paths each need their own materials.'},
+    {key:'el',name:'eLearning development',color:'var(--c-build)',cls:'sc-cat',scale:'Scales with catalogue',
+     title:'eLearning development',
+     body:'Annual effort to build and refresh self-paced modules (Rise, Storyline). The most expensive content per finished hour, but with effectively zero per-person delivery cost afterward.',
+     drivers:'The eLearning share of the 24 credits, and the number of paths. Independent of how many staff complete it.'},
+    {key:'ext',name:'External coordination',color:'var(--c-fixed)',cls:'sc-fixed',scale:'Fixed-ish',
+     title:'External-instructor coordination',
+     body:'Contracting, briefing, scheduling, and quality assurance for the share taught by others. Outsourcing removes delivery hours but never removes them entirely — this is what is left.',
+     drivers:'The number of externally-taught sessions. Trade-off: every hour you offload buys back a fraction in coordination.'},
+    {key:'sched',name:'Scheduling / logistics',color:'var(--c-overhead)',cls:'sc-head',scale:'Scales with staff',
+     title:'Session scheduling / logistics',
+     body:'Booking rooms and equipment, building rosters, sending reminders, capturing sign-in, and entering attendance — for every session. The cost of getting shift-working paramedics into a room.',
+     drivers:'The number of sessions, which grows as classes shrink or the instructor-led share rises.'},
+    {key:'admin',name:'Admin / tracking',color:'var(--c-overhead)',cls:'sc-head',scale:'Scales with staff',
+     title:'Per-head admin / tracking',
+     body:'Enrolment, credit reconciliation across paths, exceptions (leave, return-to-work, mid-year hires), and the disproportionate effort of chasing the final non-compliant stretch. The bucket teams forget to staff.',
+     drivers:'Driven straight off the 800. Also the single most reducible line — a Power Apps / SuccessFactors workflow can roughly halve it.'},
+    {key:'gov',name:'Program governance',color:'var(--c-fixed)',cls:'sc-fixed',scale:'Fixed',
+     title:'Program governance',
+     body:'Framework upkeep, accreditation and medical-director liaison, compliance reporting, and policy. Roughly constant whether the program serves 400 or 1,200.',
+     drivers:'Held flat in this model. In practice it ticks up with accreditation rigour rather than headcount.'}
+  ];
+
+  function calc(){
+    var pSmall=+$('s_small').value, pConf=+$('s_conf').value;
+    if(pSmall+pConf>100){ pConf=100-pSmall; $('s_conf').value=pConf; }
+    var pEl=100-pSmall-pConf;
+    var size=+$('s_size').value, ext=+$('s_ext').value/100,
+        paths=+$('s_paths').value, admin=+$('s_admin').value, sched=+$('s_sched').value;
+
+    var paid=+$('s_paid').value, vac=+$('s_vac').value, stat=+$('s_stat').value,
+        sick=+$('s_sick').value, ceHrs=+$('s_ce').value, util=+$('s_util').value/100;
+    var atWork=paid - vac*40 - stat*8 - sick*8 - ceHrs;
+    var effHrs=atWork*util;
+    var pathMult=1+(paths-1)*0.35;
+    var hS=CREDITS*pSmall/100, hC=CREDITS*pConf/100, hE=CREDITS*pEl/100;
+    var sessS=(STAFF*hS)/(size*SESSLEN), sessC=(STAFF*hC)/(CONFSIZE*SESSLEN), sessTot=sessS+sessC;
+    var contact=sessTot*SESSLEN*INSTR;
+    var del=contact*(1-ext), prep=del*PREP;
+    var ilt=(hS+hC)*pathMult*ILTRATIO*REFRESH;
+    var el=hE*pathMult*ELRATIO*REFRESH;
+    var extC=sessTot*ext*EXTCOORD, schedH=sessTot*sched, adminH=STAFF*admin;
+    var v={del:del,prep:prep,ilt:ilt,el:el,ext:extC,sched:schedH,admin:adminH,gov:GOV};
+    var total=0; for(var k in v){total+=v[k];}
+
+    $('o_small').textContent=pSmall+'%'; $('o_conf').textContent=pConf+'%';
+    $('o_el').textContent=pEl+'%'; $('bar_el').style.width=pEl+'%';
+    $('o_size').textContent=size; $('o_ext').textContent=Math.round(ext*100)+'%';
+    $('o_paths').textContent=paths; $('o_admin').textContent=admin.toFixed(2);
+    $('o_sched').textContent=sched;
+    $('o_paid').textContent=paid.toLocaleString(); $('o_vac').textContent=vac;
+    $('o_stat').textContent=stat; $('o_sick').textContent=sick;
+    $('o_ce').textContent=ceHrs; $('o_util').textContent=Math.round(util*100)+'%';
+
+    $('m_paid').textContent=paid.toLocaleString();
+    $('m_atwork').textContent=Math.round(atWork).toLocaleString();
+    $('m_eff').textContent=Math.round(effHrs).toLocaleString();
+
+    $('m_fte').innerHTML=(total/effHrs).toFixed(2)+'<small>FTE</small>';
+    $('m_total').textContent=Math.round(total).toLocaleString();
+    $('m_sess').textContent=Math.round(sessTot).toLocaleString();
+    $('m_learner').textContent=(STAFF*CREDITS).toLocaleString();
+
+    var max=0; for(var k2 in v){ if(v[k2]>max)max=v[k2]; }
+    var barHtml=META.map(function(m){
+      var val=v[m.key], w=Math.round(val/max*100);
+      return '<div class="bar-row"><div class="name"><span class="dot" style="background:'+m.color+'"></span>'+m.name+'</div>'+
+             '<div class="meter"><span style="width:'+w+'%;background:'+m.color+';opacity:.85"></span></div>'+
+             '<div class="num">'+Math.round(val).toLocaleString()+'</div></div>';
+    }).join('');
+    $('bars').innerHTML=barHtml;
+
+    var del2=Math.round(del+prep), ovh=Math.round(adminH+schedH);
+    var lostPct=Math.round((1-effHrs/paid)*100);
+    $('hint').innerHTML='At these settings, <b>live delivery and prep ('+del2.toLocaleString()+' hrs)</b> and '+
+      '<b>headcount-driven overhead ('+ovh.toLocaleString()+' hrs)</b> make up the bulk of the load — all of it scaling with your 800. '+
+      'And because a paid post yields only <b>'+Math.round(effHrs).toLocaleString()+' on-program hours ('+lostPct+'% lost</b> to leave, own training, and non-program duties), the headcount you must budget is well above a naive workload\u00F7full-time-hours figure. '+
+      'Two levers move it most: the <b>admin</b> slider (automation buys back ~a quarter-FTE) and <b>on-program utilization</b> (every realistic point you can defend changes the ask).';
+  }
+
+  $('cards').innerHTML=META.map(function(m){
+    return '<div class="card" style="border-left-color:'+m.color+'">'+
+      '<h4>'+m.title+'<span class="scale '+m.cls+'">'+m.scale+'</span></h4>'+
+      '<p>'+m.body+'</p>'+
+      '<p class="drv"><b>What drives it:</b> '+m.drivers+'</p></div>';
+  }).join('');
+
+  ['s_small','s_conf','s_size','s_ext','s_paths','s_admin','s_sched',
+   's_paid','s_vac','s_stat','s_sick','s_ce','s_util'].forEach(function(id){
+    $(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
